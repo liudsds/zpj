@@ -1,0 +1,10 @@
+netlify-drop-build/
+netlify-drop.zip
+
+*.log
+*.tmp
+*.err
+*.out
+
+.DS_Store
+Thumbs.db

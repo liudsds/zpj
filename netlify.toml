@@ -1,0 +1,6 @@
+[build]
+  command = "node prepare-netlify-drop.mjs"
+  publish = "netlify-drop-build"
+
+[build.environment]
+  NODE_VERSION = "20"
