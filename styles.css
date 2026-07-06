@@ -6936,3 +6936,107 @@ main,
       scale(.92) !important;
   }
 }
+
+/* Mobile dialog rescue: show full media instead of cropping to a third */
+@media (max-width: 900px) {
+  .project-dialog {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100svh;
+    max-height: 100svh !important;
+  }
+
+  .dialog-shell {
+    padding: 16px 12px 18px !important;
+  }
+
+  .dialog-heading {
+    margin-bottom: 14px;
+    padding-right: 52px;
+  }
+
+  .slide-viewer {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  .slide-figure {
+    min-height: auto !important;
+  }
+
+  .project-dialog .slide-media,
+  .project-dialog .slide-figure img.slide-media,
+  .project-dialog .gallery-image,
+  .project-dialog .gallery-video,
+  .project-dialog .faction-image,
+  .project-dialog .faction-video {
+    width: 100% !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    background: transparent !important;
+  }
+
+  .project-dialog .slide-media {
+    height: min(62svh, 460px) !important;
+    max-height: min(62svh, 460px) !important;
+  }
+
+  .project-dialog .gallery-image,
+  .project-dialog .gallery-video {
+    height: auto !important;
+    max-height: min(68svh, 560px) !important;
+  }
+
+  .gallery-frame,
+  .gallery-caption,
+  .faction-sheet,
+  .process-board,
+  .dialog-media-gallery.is-ratio-gallery .gallery-frame,
+  .dialog-media-gallery.is-ratio-gallery .gallery-caption {
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+  }
+
+  .gallery-frame {
+    padding: 10px !important;
+  }
+
+  .faction-panel,
+  .faction-sheet {
+    height: auto !important;
+    min-height: auto !important;
+  }
+
+  .faction-layout {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  .faction-card {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .project-dialog .slide-media {
+    height: min(56svh, 380px) !important;
+    max-height: min(56svh, 380px) !important;
+  }
+
+  .project-dialog .gallery-image,
+  .project-dialog .gallery-video,
+  .project-dialog .faction-image,
+  .project-dialog .faction-video {
+    max-height: min(60svh, 420px) !important;
+  }
+
+  .gallery-frame,
+  .gallery-caption,
+  .faction-sheet,
+  .process-board {
+    width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+  }
+}
