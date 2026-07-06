@@ -1,0 +1,10 @@
+.git
+.agents
+netlify-drop-build
+netlify-drop.zip
+*.log
+*.tmp
+*.err
+*.out
+Thumbs.db
+.DS_Store
