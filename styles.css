@@ -6944,10 +6944,13 @@ main,
     max-width: 100vw !important;
     height: 100svh;
     max-height: 100svh !important;
+    overflow: auto !important;
   }
 
   .dialog-shell {
     padding: 16px 12px 18px !important;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
   }
 
   .dialog-heading {
@@ -6970,7 +6973,9 @@ main,
   .project-dialog .gallery-video,
   .project-dialog .faction-image,
   .project-dialog .faction-video {
-    width: 100% !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin-inline: auto !important;
     object-fit: contain !important;
     object-position: center !important;
     background: transparent !important;
@@ -6999,6 +7004,14 @@ main,
 
   .gallery-frame {
     padding: 10px !important;
+  }
+
+  .slide-figure figcaption,
+  .gallery-caption {
+    flex-wrap: wrap;
+    row-gap: 6px;
+    font-size: 10px;
+    line-height: 1.4;
   }
 
   .faction-panel,
