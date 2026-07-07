@@ -75,6 +75,27 @@ function visibleItemsForProject(project) {
 }
 function viewerItems(project) {
   const items = visibleItemsForProject(project).slice().sort((a, b) => {
+    if (project?.slug === 'project-0-2') {
+      const sourceItems = visibleItemsForProject(project);
+      const labelOrder = new Map();
+      sourceItems.forEach(item => {
+        const label = factionLabelFor(item);
+        if (label && !labelOrder.has(label)) labelOrder.set(label, labelOrder.size);
+      });
+      const kindScore = item => {
+        const name = String(item?.name || '');
+        if (item?.type === 'video' || /技能展示/i.test(name)) return 0;
+        if (/角色设定/i.test(name)) return 1;
+        if (/场景设定|角场景设定/i.test(name)) return 2;
+        if (/三视图/i.test(name)) return 3;
+        return 4;
+      };
+      const groupDiff = (labelOrder.get(factionLabelFor(a)) ?? Number.MAX_SAFE_INTEGER) - (labelOrder.get(factionLabelFor(b)) ?? Number.MAX_SAFE_INTEGER);
+      if (groupDiff !== 0) return groupDiff;
+      const kindDiff = kindScore(a) - kindScore(b);
+      if (kindDiff !== 0) return kindDiff;
+      return String(a?.name || '').localeCompare(String(b?.name || ''), 'zh-CN-u-co-pinyin-nu');
+    }
     if (project?.slug === 'project-0-3') {
       const score = item => {
         const name = String(item?.name || '');
@@ -175,7 +196,7 @@ function preferredHeroItem(project) {
 }
 function galleryModeFor(project) {
   const items = viewerItems(project);
-  if (['project-0-3', 'project-1-1'].includes(project?.slug)) return items.length > 1;
+  if (['project-0-2', 'project-0-3', 'project-1-1'].includes(project?.slug)) return items.length > 1;
   return items.length > 1 && items.every(item => item.type === 'image');
 }
 function ratioGalleryModeFor(project) {
@@ -183,12 +204,12 @@ function ratioGalleryModeFor(project) {
 }
 function galleryItemMarkup(item, index) {
   if (item.type === 'video') {
-    return `<video class="gallery-image gallery-video" src="${item.url}" controls autoplay muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
+    return `<video class="gallery-image gallery-video" src="${item.url}" controls muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
   }
   return `<img class="gallery-image" src="${item.url || item.encodedThumb}" alt="${escapeHTML(item.name)}" loading="${index < 2 ? 'eager' : 'lazy'}"${lightboxAttrs(item)}>`;
 }
 function factionModeFor(project) {
-  return project?.slug === 'project-0-2';
+  return false;
 }
 function factionLabelFor(item) {
   return String(item?.name || '').split('—')[0].replace(/\.(png|jpe?g|webp|mp4)$/i, '').trim();
@@ -563,7 +584,12 @@ function itemMarkup(item) {
   if (item.type === 'image') return `<img class="slide-media slide-image" src="${item.url || item.encodedThumb}" alt="${escapeHTML(item.name)}"${lightboxAttrs(item)}>`;
   return `<div class="slide-file"><strong>${typeLabel[item.type] || '文件'}</strong><a href="${item.url}" target="_blank" rel="noreferrer">打开原文件</a></div>`;
 }
+function pauseMedia(rootNode = dialogMedia) {
+  if (!rootNode) return;
+  rootNode.querySelectorAll('video').forEach(video => video.pause());
+}
 function cleanupDialogView() {
+  pauseMedia(dialogMedia);
   if (galleryObserver) {
     galleryObserver.disconnect();
     galleryObserver = null;

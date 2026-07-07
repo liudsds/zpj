@@ -6953,6 +6953,10 @@ main,
     -webkit-overflow-scrolling: touch;
   }
 
+  .dialog-shell.gallery-shell {
+    scroll-padding-top: 72px;
+  }
+
   .dialog-heading {
     margin-bottom: 14px;
     padding-right: 52px;
@@ -6989,7 +6993,7 @@ main,
   .project-dialog .gallery-image,
   .project-dialog .gallery-video {
     height: auto !important;
-    max-height: min(68svh, 560px) !important;
+    max-height: calc(100svh - 170px) !important;
   }
 
   .gallery-frame,
@@ -7003,7 +7007,34 @@ main,
   }
 
   .gallery-frame {
-    padding: 10px !important;
+    width: fit-content !important;
+    max-width: calc(100vw - 24px) !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    margin-inline: auto !important;
+  }
+
+  .dialog-media-gallery {
+    min-height: auto !important;
+    padding: 68px 0 24px !important;
+  }
+
+  .gallery-panel {
+    min-height: calc(100svh - 122px) !important;
+    padding: 8px 0 12px !important;
+    align-content: center !important;
+  }
+
+  .gallery-panel + .gallery-panel {
+    margin-top: 12px !important;
+  }
+
+  .gallery-caption {
+    width: min(calc(100vw - 24px), 100%) !important;
+    max-width: calc(100vw - 24px) !important;
+    margin-inline: auto !important;
+    padding-top: 8px !important;
   }
 
   .slide-figure figcaption,
@@ -7042,7 +7073,7 @@ main,
   .project-dialog .gallery-video,
   .project-dialog .faction-image,
   .project-dialog .faction-video {
-    max-height: min(60svh, 420px) !important;
+    max-height: calc(100svh - 156px) !important;
   }
 
   .gallery-frame,
@@ -7051,5 +7082,31 @@ main,
   .process-board {
     width: calc(100vw - 20px) !important;
     max-width: calc(100vw - 20px) !important;
+  }
+
+  .gallery-frame,
+  .dialog-media-gallery.is-ratio-gallery .gallery-frame,
+  .project-dialog[data-project="渔康宝ui设计"] .dialog-media-gallery .gallery-frame,
+  .project-dialog[data-project="茂昌眼镜人脸扫描仪"] .dialog-media-gallery .gallery-frame {
+    width: fit-content !important;
+    max-width: calc(100vw - 20px) !important;
+    padding: 0 !important;
+  }
+
+  .gallery-caption,
+  .dialog-media-gallery.is-ratio-gallery .gallery-caption,
+  .project-dialog[data-project="渔康宝ui设计"] .dialog-media-gallery .gallery-caption,
+  .project-dialog[data-project="茂昌眼镜人脸扫描仪"] .dialog-media-gallery .gallery-caption {
+    width: min(calc(100vw - 20px), 100%) !important;
+    max-width: calc(100vw - 20px) !important;
+  }
+
+  .dialog-media-gallery {
+    padding: 62px 0 20px !important;
+  }
+
+  .gallery-panel {
+    min-height: calc(100svh - 112px) !important;
+    padding: 6px 0 10px !important;
   }
 }
