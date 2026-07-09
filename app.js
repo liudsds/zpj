@@ -12,7 +12,7 @@ const mediaLightboxStage = document.getElementById('mediaLightboxStage');
 const mediaLightboxClose = document.getElementById('mediaLightboxClose');
 
 const typeLabel = { image: '图片', video: '视频', pdf: 'PDF', deck: 'PPT', file: '文件' };
-const mediaVersion = '20260709-h264-video-3';
+const mediaVersion = '20260709-mobile-audio-1';
 const domainWords = {
   'AI创作': 'AI CREATION',
   'UI设计': 'UI DESIGN',
@@ -218,7 +218,7 @@ function ratioGalleryModeFor(project) {
 }
 function galleryItemMarkup(item, index) {
   if (item.type === 'video') {
-    return `<video class="gallery-image gallery-video" src="${escapeHTML(mediaSrc(item))}" controls autoplay muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
+    return `<video class="gallery-image gallery-video" src="${escapeHTML(mediaSrc(item))}" controls autoplay loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
   }
   return `<img class="gallery-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" loading="eager" decoding="async"${lightboxAttrs(item)}>`;
 }
@@ -621,7 +621,7 @@ function itemMarkup(item) {
   if (item.type === 'process-board') {
     return `<div class="slide-media process-board">${item.processItems.map((entry, index) => `<figure class="process-board-item"><button class="process-board-hit" type="button" aria-label="放大查看 ${escapeHTML(entry.name)}" data-lightbox-src="${escapeHTML(entry.url)}" data-lightbox-type="image" data-lightbox-name="${escapeHTML(entry.name)}"><img class="process-board-image" src="${displayImageSrc(entry)}" alt="${escapeHTML(entry.name)}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async"></button><figcaption>${escapeHTML(entry.name.replace(/\.[^.]+$/, ''))}</figcaption></figure>`).join('')}</div>`;
   }
-  if (item.type === 'video') return `<video class="slide-media slide-video" src="${escapeHTML(mediaSrc(item))}" controls muted autoplay playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
+  if (item.type === 'video') return `<video class="slide-media slide-video" src="${escapeHTML(mediaSrc(item))}" controls autoplay playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
   if (item.type === 'image') return `<img class="slide-media slide-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" loading="eager" decoding="async"${lightboxAttrs(item)}>`;
   return `<div class="slide-file"><strong>${typeLabel[item.type] || '文件'}</strong><a href="${item.url}" target="_blank" rel="noreferrer">打开原文件</a></div>`;
 }
@@ -629,9 +629,12 @@ function pauseMedia(rootNode = dialogMedia) {
   if (!rootNode) return;
   rootNode.querySelectorAll('video').forEach(video => video.pause());
 }
-function wakeVideo(video, startTime = 0.08) {
+function wakeVideo(video, options = {}) {
   if (!video) return;
-  video.muted = true;
+  const startTime = options.startTime ?? 0.08;
+  const muted = options.muted ?? false;
+  video.muted = muted;
+  video.defaultMuted = muted;
   video.playsInline = true;
   if (!Number.isNaN(video.duration) && video.duration > startTime && video.currentTime < startTime) {
     try { video.currentTime = startTime; } catch (error) {}
@@ -666,7 +669,7 @@ function renderSlide() {
   dialogMedia.querySelector('.next').addEventListener('click', () => showSlide(activeIndex + 1));
   dialogMedia.querySelectorAll('.strip-item').forEach(btn => btn.addEventListener('click', () => showSlide(Number(btn.dataset.index))));
   const video = dialogMedia.querySelector('.slide-video');
-  if (video) video.play().catch(() => {});
+  if (video) wakeVideo(video, { muted: false });
 }
 function renderGallery() {
   if (!activeItems.length) return;
@@ -704,7 +707,7 @@ function renderGallery() {
     panels.forEach((panel, panelIndex) => {
       const video = panel.querySelector('.gallery-video');
       if (!video) return;
-      if (panelIndex === index) video.play().catch(() => {});
+      if (panelIndex === index) wakeVideo(video, { muted: false });
       else video.pause();
     });
   };
@@ -726,7 +729,7 @@ function factionMediaMarkup(item, title, extraClass = '') {
   if (/\.png(?:$|[?#])/i.test(item.url || '')) classes.push('is-png');
   if (item.type === 'video') classes.push('is-video');
   const media = item.type === 'video'
-    ? `<video class="faction-media faction-video" src="${escapeHTML(mediaSrc(item))}" controls autoplay muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`
+    ? `<video class="faction-media faction-video" src="${escapeHTML(mediaSrc(item))}" controls autoplay loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`
     : `<img class="faction-media faction-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" loading="eager" decoding="async"${lightboxAttrs(item)}>`;
   return `<figure class="${classes.filter(Boolean).join(' ')}"><div class="faction-card-label">${escapeHTML(title)}</div>${media}<figcaption>${escapeHTML(item.name)}</figcaption></figure>`;
 }
@@ -749,7 +752,7 @@ function openMediaLightbox({ src, type, name }) {
     ? `<video class="media-lightbox-media is-video" src="${escapeHTML(src)}" controls autoplay playsinline></video>${safeName ? `<div class="media-lightbox-caption">${safeName}</div>` : ''}`
     : `<img class="media-lightbox-media is-image" src="${escapeHTML(src)}" alt="${safeName}">${safeName ? `<div class="media-lightbox-caption">${safeName}</div>` : ''}`;
   mediaLightbox.hidden = false;
-  mediaLightboxStage.querySelector('video')?.play().catch(() => {});
+  wakeVideo(mediaLightboxStage.querySelector('video'), { muted: false });
 }
 function renderFactionFlow() {
   if (!activeSections.length) return;
@@ -798,7 +801,7 @@ function renderFactionFlow() {
       const isCurrent = Number(panel.dataset.index) === index;
       panel.classList.toggle('is-current', isCurrent);
       panel.querySelectorAll('video').forEach(video => {
-        if (isCurrent) video.play().catch(() => {});
+        if (isCurrent) wakeVideo(video, { muted: false });
         else video.pause();
       });
     });
@@ -882,18 +885,18 @@ function openProject(slug) {
   else renderSlide();
   if (!dialog.open) dialog.showModal();
   const video = dialogMedia.querySelector('.slide-video');
-  if (video) wakeVideo(video);
+  if (video) wakeVideo(video, { muted: false });
 }
 function bindCards() {
   document.querySelectorAll('.project-card').forEach(card => {
     const video = card.querySelector('video');
     if (video) {
-      video.addEventListener('loadedmetadata', () => wakeVideo(video), { once: true });
-      wakeVideo(video);
+      video.addEventListener('loadedmetadata', () => wakeVideo(video, { muted: true }), { once: true });
+      wakeVideo(video, { muted: true });
     }
     card.addEventListener('mouseenter', () => {
       if (!video) return;
-      wakeVideo(video);
+      wakeVideo(video, { muted: true });
     });
     card.addEventListener('mouseleave', () => {
       if (!video) return;
@@ -915,6 +918,7 @@ function bindCards() {
 closeButton.addEventListener('click', () => dialog.close());
 dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
 dialogMedia.addEventListener('click', event => {
+  if (isTouchMode()) return;
   if (event.target.closest('video')) return;
   const media = event.target.closest('[data-lightbox-src]')
     || event.target.closest('.gallery-panel')?.querySelector('[data-lightbox-src]')

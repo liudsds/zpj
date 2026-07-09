@@ -7812,3 +7812,62 @@ main,
     content-visibility: visible !important;
   }
 }
+
+/* Mobile polish: keep hero card corners inside the viewport. */
+@media (hover: none), (pointer: coarse), (max-width: 820px) {
+  .rpg-hero {
+    overflow: hidden !important;
+  }
+
+  .rpg-hero .hero-index,
+  .rpg-hero .hero-project-list {
+    overflow: visible !important;
+  }
+
+  .rpg-hero .hero-project-list {
+    box-sizing: border-box !important;
+    width: calc(100vw - 32px) !important;
+    margin-inline: auto !important;
+    padding-inline: 16px !important;
+  }
+
+  .rpg-hero .hero-project-row,
+  .rpg-hero .hero-project-row:nth-child(n) {
+    width: clamp(132px, 36vw, 156px) !important;
+    max-width: calc(50vw - 24px) !important;
+    transform:
+      translate(-50%, -50%)
+      translateX(calc(var(--card-x) * .38))
+      translateY(calc(var(--card-y) * .5))
+      rotate(calc(var(--card-rotate) * .5)) !important;
+  }
+
+  .rpg-hero .hero-project-row.is-featured {
+    transform:
+      translate(-50%, -50%)
+      translateX(calc(var(--card-x) * .38))
+      translateY(calc(calc(var(--card-y) * .5) - 52px))
+      rotate(calc(var(--card-rotate) * .05))
+      scale(1.08) !important;
+  }
+
+  .rpg-hero.has-active .hero-project-row:not(.is-featured) {
+    transform:
+      translate(-50%, -50%)
+      translateX(calc(var(--card-x) * .38))
+      translateY(calc(calc(var(--card-y) * .5) + 8px))
+      rotate(calc(var(--card-rotate) * .5))
+      scale(.92) !important;
+  }
+
+  .rpg-hero .hero-project-link,
+  .rpg-hero .hero-thumb {
+    overflow: visible !important;
+    contain: none !important;
+    content-visibility: visible !important;
+  }
+
+  .rpg-hero .hero-project-link {
+    border-radius: 24px !important;
+  }
+}
