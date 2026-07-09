@@ -7680,3 +7680,104 @@ main,
     justify-self: center !important;
   }
 }
+
+@media (hover: none), (pointer: coarse), (max-width: 820px) {
+  .project-dialog[data-project-slug="project-0-2"],
+  .project-dialog[data-project-slug="project-0-3"],
+  .project-dialog[data-project-slug="project-1-1"],
+  .project-dialog[data-domain-slug="domain-2"],
+  .project-dialog[data-domain-slug="domain-3"] {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    overflow-x: hidden !important;
+  }
+
+  .project-dialog[data-project-slug="project-0-2"] .dialog-shell,
+  .project-dialog[data-project-slug="project-0-3"] .dialog-shell,
+  .project-dialog[data-project-slug="project-1-1"] .dialog-shell,
+  .project-dialog[data-domain-slug="domain-2"] .dialog-shell,
+  .project-dialog[data-domain-slug="domain-3"] .dialog-shell,
+  .project-dialog[data-project-slug="project-0-2"] .dialog-media,
+  .project-dialog[data-project-slug="project-0-3"] .dialog-media,
+  .project-dialog[data-project-slug="project-1-1"] .dialog-media,
+  .project-dialog[data-domain-slug="domain-2"] .dialog-media,
+  .project-dialog[data-domain-slug="domain-3"] .dialog-media,
+  .project-dialog[data-project-slug="project-0-2"] .dialog-media-gallery,
+  .project-dialog[data-project-slug="project-0-3"] .dialog-media-gallery,
+  .project-dialog[data-project-slug="project-1-1"] .dialog-media-gallery,
+  .project-dialog[data-domain-slug="domain-2"] .dialog-media-gallery,
+  .project-dialog[data-domain-slug="domain-3"] .dialog-media-gallery,
+  .project-dialog[data-project-slug="project-0-2"] .gallery-flow,
+  .project-dialog[data-project-slug="project-0-3"] .gallery-flow,
+  .project-dialog[data-project-slug="project-1-1"] .gallery-flow,
+  .project-dialog[data-domain-slug="domain-2"] .gallery-flow,
+  .project-dialog[data-domain-slug="domain-3"] .gallery-flow,
+  .project-dialog[data-project-slug="project-0-2"] .gallery-panel,
+  .project-dialog[data-project-slug="project-0-3"] .gallery-panel,
+  .project-dialog[data-project-slug="project-1-1"] .gallery-panel,
+  .project-dialog[data-domain-slug="domain-2"] .gallery-panel,
+  .project-dialog[data-domain-slug="domain-3"] .gallery-panel {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    overflow-x: hidden !important;
+    justify-items: center !important;
+  }
+
+  .project-dialog[data-project-slug="project-0-2"] .gallery-frame,
+  .project-dialog[data-project-slug="project-0-3"] .gallery-frame,
+  .project-dialog[data-project-slug="project-1-1"] .gallery-frame,
+  .project-dialog[data-domain-slug="domain-2"] .gallery-frame,
+  .project-dialog[data-domain-slug="domain-3"] .gallery-frame {
+    box-sizing: border-box !important;
+    width: calc(100% - 20px) !important;
+    max-width: calc(100% - 20px) !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    justify-self: center !important;
+    overflow: visible !important;
+  }
+
+  .project-dialog[data-project-slug="project-0-2"] .gallery-image,
+  .project-dialog[data-project-slug="project-0-3"] .gallery-image,
+  .project-dialog[data-project-slug="project-1-1"] .gallery-image,
+  .project-dialog[data-domain-slug="domain-2"] .gallery-image,
+  .project-dialog[data-domain-slug="domain-3"] .gallery-image,
+  .project-dialog[data-project-slug="project-0-2"] .gallery-video,
+  .project-dialog[data-project-slug="project-0-3"] .gallery-video,
+  .project-dialog[data-project-slug="project-1-1"] .gallery-video {
+    box-sizing: border-box !important;
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    flex: 0 1 auto !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+  }
+
+  .project-dialog[data-project-slug="project-0-2"] .gallery-caption,
+  .project-dialog[data-project-slug="project-0-3"] .gallery-caption,
+  .project-dialog[data-project-slug="project-1-1"] .gallery-caption,
+  .project-dialog[data-domain-slug="domain-2"] .gallery-caption,
+  .project-dialog[data-domain-slug="domain-3"] .gallery-caption {
+    box-sizing: border-box !important;
+    width: calc(100% - 20px) !important;
+    max-width: calc(100% - 20px) !important;
+  }
+}
