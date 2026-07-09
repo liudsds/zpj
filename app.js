@@ -210,7 +210,7 @@ function galleryItemMarkup(item, index) {
   return `<img class="gallery-image" src="${item.url || item.encodedThumb}" alt="${escapeHTML(item.name)}" loading="${index < 2 ? 'eager' : 'lazy'}"${lightboxAttrs(item)}>`;
 }
 function factionModeFor(project) {
-  return project?.slug === 'project-0-2';
+  return project?.slug === 'project-0-2' && !isTouchMode();
 }
 function factionLabelFor(item) {
   return String(item?.name || '').split('—')[0].replace(/\.(png|jpe?g|webp|mp4)$/i, '').trim();

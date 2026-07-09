@@ -7347,3 +7347,118 @@ main,
 .rpg-hero .hero-thumb {
   content-visibility: auto;
 }
+
+@media (hover: none), (pointer: coarse), (max-width: 820px) {
+  .project-dialog[data-project="游戏设定集"] .dialog-media-gallery,
+  .project-dialog[data-project="IP角色"] .dialog-media-gallery,
+  .project-dialog[data-project="渔康宝ui设计"] .dialog-media-gallery,
+  .project-dialog[data-domain="产品设计"] .dialog-media-gallery,
+  .project-dialog[data-domain="包装设计"] .dialog-media-gallery {
+    padding: 62px 0 10svh !important;
+  }
+
+  .project-dialog[data-project="游戏设定集"] .viewer-stage-word-gallery,
+  .project-dialog[data-project="游戏设定集"] .gallery-side,
+  .project-dialog[data-project="IP角色"] .viewer-stage-word-gallery,
+  .project-dialog[data-project="IP角色"] .gallery-side,
+  .project-dialog[data-project="渔康宝ui设计"] .viewer-stage-word-gallery,
+  .project-dialog[data-project="渔康宝ui设计"] .gallery-side,
+  .project-dialog[data-domain="产品设计"] .viewer-stage-word-gallery,
+  .project-dialog[data-domain="产品设计"] .gallery-side,
+  .project-dialog[data-domain="包装设计"] .viewer-stage-word-gallery,
+  .project-dialog[data-domain="包装设计"] .gallery-side {
+    display: none !important;
+  }
+
+  .project-dialog[data-project="游戏设定集"] .dialog-media-gallery .gallery-panel,
+  .project-dialog[data-project="IP角色"] .dialog-media-gallery .gallery-panel,
+  .project-dialog[data-project="渔康宝ui设计"] .dialog-media-gallery .gallery-panel,
+  .project-dialog[data-domain="产品设计"] .dialog-media-gallery .gallery-panel,
+  .project-dialog[data-domain="包装设计"] .dialog-media-gallery .gallery-panel {
+    min-height: auto !important;
+    align-content: start !important;
+    justify-items: center !important;
+    padding: 1.2svh 0 0 !important;
+  }
+
+  .project-dialog[data-project="游戏设定集"] .dialog-media-gallery .gallery-panel + .gallery-panel,
+  .project-dialog[data-project="IP角色"] .dialog-media-gallery .gallery-panel + .gallery-panel,
+  .project-dialog[data-project="渔康宝ui设计"] .dialog-media-gallery .gallery-panel + .gallery-panel,
+  .project-dialog[data-domain="产品设计"] .dialog-media-gallery .gallery-panel + .gallery-panel,
+  .project-dialog[data-domain="包装设计"] .dialog-media-gallery .gallery-panel + .gallery-panel {
+    margin-top: 24px !important;
+  }
+
+  .project-dialog[data-project="游戏设定集"] .dialog-media-gallery .gallery-frame,
+  .project-dialog[data-project="IP角色"] .dialog-media-gallery .gallery-frame,
+  .project-dialog[data-project="渔康宝ui设计"] .dialog-media-gallery .gallery-frame,
+  .project-dialog[data-domain="产品设计"] .dialog-media-gallery .gallery-frame,
+  .project-dialog[data-domain="包装设计"] .dialog-media-gallery .gallery-frame {
+    width: fit-content !important;
+    max-width: calc(100vw - 20px) !important;
+    padding: 0 !important;
+    margin-inline: auto !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .project-dialog[data-project="游戏设定集"] .dialog-media-gallery .gallery-panel.is-current .gallery-frame,
+  .project-dialog[data-project="游戏设定集"] .dialog-media-gallery .gallery-panel.is-current.is-png .gallery-frame,
+  .project-dialog[data-project="游戏设定集"] .dialog-media-gallery .gallery-panel.is-png .gallery-frame,
+  .project-dialog[data-project="IP角色"] .dialog-media-gallery .gallery-panel.is-current .gallery-frame,
+  .project-dialog[data-project="IP角色"] .dialog-media-gallery .gallery-panel.is-current.is-png .gallery-frame,
+  .project-dialog[data-project="IP角色"] .dialog-media-gallery .gallery-panel.is-png .gallery-frame,
+  .project-dialog[data-project="渔康宝ui设计"] .dialog-media-gallery .gallery-panel.is-current .gallery-frame,
+  .project-dialog[data-project="渔康宝ui设计"] .dialog-media-gallery .gallery-panel.is-current.is-png .gallery-frame,
+  .project-dialog[data-project="渔康宝ui设计"] .dialog-media-gallery .gallery-panel.is-png .gallery-frame,
+  .project-dialog[data-domain="产品设计"] .dialog-media-gallery .gallery-panel.is-current .gallery-frame,
+  .project-dialog[data-domain="产品设计"] .dialog-media-gallery .gallery-panel.is-current.is-png .gallery-frame,
+  .project-dialog[data-domain="产品设计"] .dialog-media-gallery .gallery-panel.is-png .gallery-frame,
+  .project-dialog[data-domain="包装设计"] .dialog-media-gallery .gallery-panel.is-current .gallery-frame,
+  .project-dialog[data-domain="包装设计"] .dialog-media-gallery .gallery-panel.is-current.is-png .gallery-frame,
+  .project-dialog[data-domain="包装设计"] .dialog-media-gallery .gallery-panel.is-png .gallery-frame {
+    transform: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .project-dialog[data-project="游戏设定集"] .dialog-media-gallery .gallery-image,
+  .project-dialog[data-project="IP角色"] .dialog-media-gallery .gallery-image,
+  .project-dialog[data-project="渔康宝ui设计"] .dialog-media-gallery .gallery-image,
+  .project-dialog[data-domain="产品设计"] .dialog-media-gallery .gallery-image,
+  .project-dialog[data-domain="包装设计"] .dialog-media-gallery .gallery-image {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: calc(100vw - 20px) !important;
+    max-height: none !important;
+    margin-inline: auto !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    background: transparent !important;
+  }
+
+  .project-dialog[data-project="游戏设定集"] .dialog-media-gallery .gallery-video,
+  .project-dialog[data-project="IP角色"] .dialog-media-gallery .gallery-video,
+  .project-dialog[data-project="渔康宝ui设计"] .dialog-media-gallery .gallery-video {
+    width: auto !important;
+    height: auto !important;
+    max-width: calc(100vw - 20px) !important;
+    max-height: calc(100svh - 146px) !important;
+    margin-inline: auto !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    background: transparent !important;
+  }
+
+  .project-dialog[data-project="游戏设定集"] .dialog-media-gallery .gallery-caption,
+  .project-dialog[data-project="IP角色"] .dialog-media-gallery .gallery-caption,
+  .project-dialog[data-project="渔康宝ui设计"] .dialog-media-gallery .gallery-caption,
+  .project-dialog[data-domain="产品设计"] .dialog-media-gallery .gallery-caption,
+  .project-dialog[data-domain="包装设计"] .dialog-media-gallery .gallery-caption {
+    width: min(calc(100vw - 20px), 100%) !important;
+    max-width: calc(100vw - 20px) !important;
+    margin-inline: auto !important;
+    padding-top: 10px !important;
+  }
+}
