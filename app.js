@@ -12,7 +12,7 @@ const mediaLightboxStage = document.getElementById('mediaLightboxStage');
 const mediaLightboxClose = document.getElementById('mediaLightboxClose');
 
 const typeLabel = { image: '图片', video: '视频', pdf: 'PDF', deck: 'PPT', file: '文件' };
-const mediaVersion = '20260709-mobile-card-fix-1';
+const mediaVersion = '20260709-mobile-back-1';
 const domainWords = {
   'AI创作': 'AI CREATION',
   'UI设计': 'UI DESIGN',
@@ -33,6 +33,8 @@ let activeIndex = 0;
 let activeViewMode = 'slide';
 let galleryObserver = null;
 let cleanupFactionInteraction = null;
+let dialogHistoryActive = false;
+let closingFromDialogHistory = false;
 const touchModeQuery = window.matchMedia('(hover: none), (pointer: coarse), (max-width: 820px)');
 
 function isTouchMode() {
@@ -865,6 +867,19 @@ function showSlide(index) {
   activeIndex = (index + activeItems.length) % activeItems.length;
   renderSlide();
 }
+function pushDialogHistory(slug) {
+  if (!isTouchMode() || dialogHistoryActive) return;
+  history.pushState({ portfolioDialog: true, slug }, '', location.href);
+  dialogHistoryActive = true;
+}
+function closeProjectDialog() {
+  if (!dialog.open) return;
+  if (dialogHistoryActive && !closingFromDialogHistory) {
+    history.back();
+    return;
+  }
+  dialog.close();
+}
 function openProject(slug) {
   const found = findProject(slug);
   if (!found) return;
@@ -884,6 +899,7 @@ function openProject(slug) {
   else if (galleryModeFor(activeProject)) renderGallery();
   else renderSlide();
   if (!dialog.open) dialog.showModal();
+  pushDialogHistory(slug);
   const video = dialogMedia.querySelector('.slide-video');
   if (video) wakeVideo(video, { muted: false });
 }
@@ -915,8 +931,8 @@ function bindCards() {
   });
 }
 
-closeButton.addEventListener('click', () => dialog.close());
-dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
+closeButton.addEventListener('click', closeProjectDialog);
+dialog.addEventListener('click', event => { if (event.target === dialog) closeProjectDialog(); });
 dialogMedia.addEventListener('click', event => {
   if (isTouchMode()) return;
   if (event.target.closest('video')) return;
@@ -935,11 +951,22 @@ mediaLightbox?.addEventListener('click', event => {
   if (event.target === mediaLightbox) closeMediaLightbox();
 });
 dialog.addEventListener('close', () => {
+  if (dialogHistoryActive && !closingFromDialogHistory) {
+    dialogHistoryActive = false;
+    history.back();
+  }
   closeMediaLightbox();
   cleanupDialogView();
   dialogShell.scrollTop = 0;
   dialog.querySelectorAll('video').forEach(video => video.pause());
   activeSections = [];
+});
+window.addEventListener('popstate', () => {
+  if (!dialogHistoryActive || !dialog.open) return;
+  closingFromDialogHistory = true;
+  dialogHistoryActive = false;
+  dialog.close();
+  closingFromDialogHistory = false;
 });
 document.addEventListener('keydown', event => {
   if (mediaLightbox && !mediaLightbox.hidden && event.key === 'Escape') {
