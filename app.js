@@ -853,6 +853,8 @@ function openProject(slug) {
   activeIndex = 0;
   dialog.dataset.domain = activeDomain.domain;
   dialog.dataset.project = activeProject.name;
+  dialog.dataset.domainSlug = activeDomain.slug;
+  dialog.dataset.projectSlug = activeProject.slug;
   dialogDomain.textContent = activeDomain.domain;
   dialogTitle.textContent = activeProject.name;
   dialogShell.scrollTop = 0;
@@ -891,7 +893,9 @@ function bindCards() {
 closeButton.addEventListener('click', () => dialog.close());
 dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
 dialogMedia.addEventListener('click', event => {
-  const media = event.target.closest('[data-lightbox-src]');
+  const media = event.target.closest('[data-lightbox-src]')
+    || event.target.closest('.gallery-panel')?.querySelector('[data-lightbox-src]')
+    || event.target.closest('.faction-card')?.querySelector('[data-lightbox-src]');
   if (!media) return;
   openMediaLightbox({
     src: media.dataset.lightboxSrc,
