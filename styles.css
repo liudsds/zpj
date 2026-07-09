@@ -7781,3 +7781,34 @@ main,
     max-width: calc(100% - 20px) !important;
   }
 }
+
+/* Desktop repair: avoid clipping the rotated hero cards and keep dialog media eager. */
+@media (hover: hover) and (pointer: fine) and (min-width: 821px) {
+  .rpg-hero,
+  .rpg-hero .hero-index,
+  .rpg-hero .hero-project-list {
+    overflow: visible !important;
+  }
+
+  .rpg-hero .hero-project-list {
+    contain: none !important;
+  }
+
+  .rpg-hero .hero-project-link,
+  .rpg-hero .hero-thumb {
+    contain: none !important;
+    content-visibility: visible !important;
+  }
+
+  .rpg-hero .hero-project-link {
+    border-radius: 30px !important;
+  }
+
+  .project-dialog .gallery-image,
+  .project-dialog .gallery-video,
+  .project-dialog .faction-image,
+  .project-dialog .faction-video,
+  .project-dialog .slide-media {
+    content-visibility: visible !important;
+  }
+}
