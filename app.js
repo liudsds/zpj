@@ -12,6 +12,7 @@ const mediaLightboxStage = document.getElementById('mediaLightboxStage');
 const mediaLightboxClose = document.getElementById('mediaLightboxClose');
 
 const typeLabel = { image: '图片', video: '视频', pdf: 'PDF', deck: 'PPT', file: '文件' };
+const mediaVersion = '20260709-h264-video-3';
 const domainWords = {
   'AI创作': 'AI CREATION',
   'UI设计': 'UI DESIGN',
@@ -175,7 +176,16 @@ function imageAsset(name, url) {
 }
 function lightboxAttrs(item) {
   if (!item || !item.url || !['image', 'video'].includes(item.type)) return '';
-  return ` data-lightbox-src="${escapeHTML(item.url)}" data-lightbox-type="${escapeHTML(item.type)}" data-lightbox-name="${escapeHTML(item.name || '')}"`;
+  return ` data-lightbox-src="${escapeHTML(mediaSrc(item))}" data-lightbox-type="${escapeHTML(item.type)}" data-lightbox-name="${escapeHTML(item.name || '')}"`;
+}
+function withMediaVersion(url = '') {
+  if (!url || /^(data:|blob:|#)/i.test(url)) return url || '';
+  const joiner = url.includes('?') ? '&' : '?';
+  return `${url}${joiner}v=${mediaVersion}`;
+}
+function mediaSrc(item) {
+  const source = item?.url || '';
+  return item?.type === 'video' ? withMediaVersion(source) : source;
 }
 function displayImageSrc(item) {
   return item?.encodedThumb || item?.thumb || item?.url || '';
@@ -208,7 +218,7 @@ function ratioGalleryModeFor(project) {
 }
 function galleryItemMarkup(item, index) {
   if (item.type === 'video') {
-    return `<video class="gallery-image gallery-video" src="${escapeHTML(item.url)}" controls autoplay muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
+    return `<video class="gallery-image gallery-video" src="${escapeHTML(mediaSrc(item))}" controls autoplay muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
   }
   return `<img class="gallery-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" loading="eager" decoding="async"${lightboxAttrs(item)}>`;
 }
@@ -287,6 +297,8 @@ function heroThumbMarkup(project) {
   return `<span class="hero-thumb"${thumbStyle}></span>`;
 }
 function previewMediaFor(project) {
+  const preferred = preferredCardItem(project);
+  if (preferred?.type === 'video') return { type: 'video', src: mediaSrc(preferred) };
   const image = lightPreviewFor(project);
   if (image) return { type: 'image', src: displayImageSrc(image) };
   return null;
@@ -580,14 +592,9 @@ function renderHeroIndex() {
 function coverMarkup(project) {
   const items = projectItems(project);
   const cover = preferredCardItem(project) || items.find(file => file.type === 'video') || coverFor(project);
-  const poster = thumbFor(project);
   if (!cover) return '<div class="doc-cover">EMPTY</div>';
   if (cover.type === 'video') {
-    const still = lightPreviewFor(project);
-    if (still) return `<img class="project-cover-poster" src="${displayImageSrc(still)}" alt="${escapeHTML(project.name)}" loading="lazy" decoding="async" data-video-cover="true">`;
-    return poster
-      ? `<img class="project-cover-poster" src="${poster}" alt="${escapeHTML(project.name)}" loading="lazy" decoding="async" data-video-cover="true">`
-      : '<div class="doc-cover">VIDEO</div>';
+    return `<video class="project-cover-video" src="${escapeHTML(mediaSrc(cover))}" muted autoplay loop playsinline preload="metadata" aria-label="${escapeHTML(project.name)}"></video>`;
   }
   if (cover.type === 'image') return `<img src="${displayImageSrc(cover)}" alt="${escapeHTML(project.name)}" loading="lazy" decoding="async">`;
   return `<div class="doc-cover">${typeLabel[cover.type] || 'FILE'}</div>`;
@@ -614,13 +621,22 @@ function itemMarkup(item) {
   if (item.type === 'process-board') {
     return `<div class="slide-media process-board">${item.processItems.map((entry, index) => `<figure class="process-board-item"><button class="process-board-hit" type="button" aria-label="放大查看 ${escapeHTML(entry.name)}" data-lightbox-src="${escapeHTML(entry.url)}" data-lightbox-type="image" data-lightbox-name="${escapeHTML(entry.name)}"><img class="process-board-image" src="${displayImageSrc(entry)}" alt="${escapeHTML(entry.name)}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async"></button><figcaption>${escapeHTML(entry.name.replace(/\.[^.]+$/, ''))}</figcaption></figure>`).join('')}</div>`;
   }
-  if (item.type === 'video') return `<video class="slide-media slide-video" src="${escapeHTML(item.url)}" controls muted autoplay playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
+  if (item.type === 'video') return `<video class="slide-media slide-video" src="${escapeHTML(mediaSrc(item))}" controls muted autoplay playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
   if (item.type === 'image') return `<img class="slide-media slide-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" loading="eager" decoding="async"${lightboxAttrs(item)}>`;
   return `<div class="slide-file"><strong>${typeLabel[item.type] || '文件'}</strong><a href="${item.url}" target="_blank" rel="noreferrer">打开原文件</a></div>`;
 }
 function pauseMedia(rootNode = dialogMedia) {
   if (!rootNode) return;
   rootNode.querySelectorAll('video').forEach(video => video.pause());
+}
+function wakeVideo(video, startTime = 0.08) {
+  if (!video) return;
+  video.muted = true;
+  video.playsInline = true;
+  if (!Number.isNaN(video.duration) && video.duration > startTime && video.currentTime < startTime) {
+    try { video.currentTime = startTime; } catch (error) {}
+  }
+  video.play().catch(() => {});
 }
 function cleanupDialogView() {
   pauseMedia(dialogMedia);
@@ -710,7 +726,7 @@ function factionMediaMarkup(item, title, extraClass = '') {
   if (/\.png(?:$|[?#])/i.test(item.url || '')) classes.push('is-png');
   if (item.type === 'video') classes.push('is-video');
   const media = item.type === 'video'
-    ? `<video class="faction-media faction-video" src="${escapeHTML(item.url)}" controls autoplay muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`
+    ? `<video class="faction-media faction-video" src="${escapeHTML(mediaSrc(item))}" controls autoplay muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`
     : `<img class="faction-media faction-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" loading="eager" decoding="async"${lightboxAttrs(item)}>`;
   return `<figure class="${classes.filter(Boolean).join(' ')}"><div class="faction-card-label">${escapeHTML(title)}</div>${media}<figcaption>${escapeHTML(item.name)}</figcaption></figure>`;
 }
@@ -866,15 +882,18 @@ function openProject(slug) {
   else renderSlide();
   if (!dialog.open) dialog.showModal();
   const video = dialogMedia.querySelector('.slide-video');
-  if (video) video.play().catch(() => {});
+  if (video) wakeVideo(video);
 }
 function bindCards() {
   document.querySelectorAll('.project-card').forEach(card => {
     const video = card.querySelector('video');
-    if (video?.dataset.coverAutoplay === 'true') video.play().catch(() => {});
+    if (video) {
+      video.addEventListener('loadedmetadata', () => wakeVideo(video), { once: true });
+      wakeVideo(video);
+    }
     card.addEventListener('mouseenter', () => {
       if (!video) return;
-      video.play().catch(() => {});
+      wakeVideo(video);
     });
     card.addEventListener('mouseleave', () => {
       if (!video) return;
