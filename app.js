@@ -177,6 +177,28 @@ function lightboxAttrs(item) {
   if (!item || !item.url || !['image', 'video'].includes(item.type)) return '';
   return ` data-lightbox-src="${escapeHTML(item.url)}" data-lightbox-type="${escapeHTML(item.type)}" data-lightbox-name="${escapeHTML(item.name || '')}"`;
 }
+function displayImageSrc(item) {
+  return item?.encodedThumb || item?.thumb || item?.url || '';
+}
+function deferredVideoAttrs(item) {
+  return ` data-video-src="${escapeHTML(item.url || '')}"`;
+}
+function ensureDeferredVideo(video) {
+  if (!video) return;
+  const source = video.dataset.videoSrc;
+  if (source && video.getAttribute('src') !== source) {
+    video.src = source;
+    video.load();
+  }
+}
+function releaseDeferredVideo(video) {
+  if (!video) return;
+  video.pause();
+  if (video.dataset.videoSrc && video.getAttribute('src')) {
+    video.removeAttribute('src');
+    video.load();
+  }
+}
 function preferredCardItem(project) {
   const items = projectItems(project);
   if (!project || !items.length) return null;
@@ -205,9 +227,9 @@ function ratioGalleryModeFor(project) {
 }
 function galleryItemMarkup(item, index) {
   if (item.type === 'video') {
-    return `<video class="gallery-image gallery-video" src="${item.url}" controls muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
+    return `<video class="gallery-image gallery-video" controls muted loop playsinline preload="none"${deferredVideoAttrs(item)}${lightboxAttrs(item)}></video>`;
   }
-  return `<img class="gallery-image" src="${item.url || item.encodedThumb}" alt="${escapeHTML(item.name)}" loading="${index < 2 ? 'eager' : 'lazy'}"${lightboxAttrs(item)}>`;
+  return `<img class="gallery-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" loading="${index < 2 ? 'eager' : 'lazy'}" decoding="async"${lightboxAttrs(item)}>`;
 }
 function factionModeFor(project) {
   return project?.slug === 'project-0-2' && !isTouchMode();
@@ -264,11 +286,11 @@ function coverFor(project) {
 }
 function thumbFor(project) {
   const preferred = preferredHeroItem(project);
-  if (preferred && preferred.type === 'image') return preferred.encodedThumb || preferred.url;
+  if (preferred && preferred.type === 'image') return displayImageSrc(preferred);
   const cover = coverFor(project);
-  if (cover && cover.type === 'image') return cover.encodedThumb || cover.url;
+  if (cover && cover.type === 'image') return displayImageSrc(cover);
   const image = projectItems(project).find(file => file.type === 'image');
-  return image ? image.encodedThumb || image.url : '';
+  return image ? displayImageSrc(image) : '';
 }
 function lightPreviewFor(project) {
   const items = projectItems(project);
@@ -285,12 +307,12 @@ function heroThumbMarkup(project) {
 }
 function previewMediaFor(project) {
   const image = lightPreviewFor(project);
-  if (image) return { type: 'image', src: image.encodedThumb || image.url };
+  if (image) return { type: 'image', src: displayImageSrc(image) };
   return null;
 }
 function ambientMediaFor(project, media) {
   const image = projectItems(project).find(file => file.type === 'image');
-  if (image) return { type: 'image', src: image.encodedThumb || image.url };
+  if (image) return { type: 'image', src: displayImageSrc(image) };
   if (media) return media;
   return null;
 }
@@ -315,7 +337,7 @@ function setProfileImage() {
   const profileProject = firstImageProject();
   if (!profileImage || !profileProject) return;
   const image = projectItems(profileProject.project).find(file => file.type === 'image');
-  if (image) profileImage.src = image.encodedThumb || image.url;
+  if (image) profileImage.src = displayImageSrc(image);
 }
 function bindProfileReveal() {
   const profile = document.querySelector('.profile-resume-section');
@@ -581,12 +603,12 @@ function coverMarkup(project) {
   if (!cover) return '<div class="doc-cover">EMPTY</div>';
   if (cover.type === 'video') {
     const still = lightPreviewFor(project);
-    if (still) return `<img class="project-cover-poster" src="${still.encodedThumb || still.url}" alt="${escapeHTML(project.name)}" loading="lazy" decoding="async" data-video-cover="true">`;
+    if (still) return `<img class="project-cover-poster" src="${displayImageSrc(still)}" alt="${escapeHTML(project.name)}" loading="lazy" decoding="async" data-video-cover="true">`;
     return poster
       ? `<img class="project-cover-poster" src="${poster}" alt="${escapeHTML(project.name)}" loading="lazy" decoding="async" data-video-cover="true">`
       : '<div class="doc-cover">VIDEO</div>';
   }
-  if (cover.type === 'image') return `<img src="${cover.encodedThumb || cover.url}" alt="${escapeHTML(project.name)}" loading="lazy" decoding="async">`;
+  if (cover.type === 'image') return `<img src="${displayImageSrc(cover)}" alt="${escapeHTML(project.name)}" loading="lazy" decoding="async">`;
   return `<div class="doc-cover">${typeLabel[cover.type] || 'FILE'}</div>`;
 }
 function render() {
@@ -609,10 +631,10 @@ function render() {
 }
 function itemMarkup(item) {
   if (item.type === 'process-board') {
-    return `<div class="slide-media process-board">${item.processItems.map((entry, index) => `<figure class="process-board-item"><button class="process-board-hit" type="button" aria-label="放大查看 ${escapeHTML(entry.name)}" data-lightbox-src="${escapeHTML(entry.url)}" data-lightbox-type="image" data-lightbox-name="${escapeHTML(entry.name)}"><img class="process-board-image" src="${entry.url || entry.encodedThumb}" alt="${escapeHTML(entry.name)}" loading="${index === 0 ? 'eager' : 'lazy'}"></button><figcaption>${escapeHTML(entry.name.replace(/\.[^.]+$/, ''))}</figcaption></figure>`).join('')}</div>`;
+    return `<div class="slide-media process-board">${item.processItems.map((entry, index) => `<figure class="process-board-item"><button class="process-board-hit" type="button" aria-label="放大查看 ${escapeHTML(entry.name)}" data-lightbox-src="${escapeHTML(entry.url)}" data-lightbox-type="image" data-lightbox-name="${escapeHTML(entry.name)}"><img class="process-board-image" src="${displayImageSrc(entry)}" alt="${escapeHTML(entry.name)}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async"></button><figcaption>${escapeHTML(entry.name.replace(/\.[^.]+$/, ''))}</figcaption></figure>`).join('')}</div>`;
   }
   if (item.type === 'video') return `<video class="slide-media slide-video" src="${item.url}" controls autoplay playsinline${lightboxAttrs(item)}></video>`;
-  if (item.type === 'image') return `<img class="slide-media slide-image" src="${item.url || item.encodedThumb}" alt="${escapeHTML(item.name)}"${lightboxAttrs(item)}>`;
+  if (item.type === 'image') return `<img class="slide-media slide-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" decoding="async"${lightboxAttrs(item)}>`;
   return `<div class="slide-file"><strong>${typeLabel[item.type] || '文件'}</strong><a href="${item.url}" target="_blank" rel="noreferrer">打开原文件</a></div>`;
 }
 function pauseMedia(rootNode = dialogMedia) {
@@ -685,8 +707,12 @@ function renderGallery() {
     panels.forEach((panel, panelIndex) => {
       const video = panel.querySelector('.gallery-video');
       if (!video) return;
-      if (panelIndex === index) video.play().catch(() => {});
-      else video.pause();
+      if (panelIndex === index) {
+        ensureDeferredVideo(video);
+        video.play().catch(() => {});
+      } else {
+        releaseDeferredVideo(video);
+      }
     });
   };
   syncGallery(0);
@@ -707,8 +733,8 @@ function factionMediaMarkup(item, title, extraClass = '') {
   if (/\.png(?:$|[?#])/i.test(item.url || '')) classes.push('is-png');
   if (item.type === 'video') classes.push('is-video');
   const media = item.type === 'video'
-    ? `<video class="faction-media faction-video" src="${item.url}" controls muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`
-    : `<img class="faction-media faction-image" src="${item.url || item.encodedThumb}" alt="${escapeHTML(item.name)}" loading="lazy"${lightboxAttrs(item)}>`;
+    ? `<video class="faction-media faction-video" controls muted loop playsinline preload="none"${deferredVideoAttrs(item)}${lightboxAttrs(item)}></video>`
+    : `<img class="faction-media faction-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" loading="lazy" decoding="async"${lightboxAttrs(item)}>`;
   return `<figure class="${classes.filter(Boolean).join(' ')}"><div class="faction-card-label">${escapeHTML(title)}</div>${media}<figcaption>${escapeHTML(item.name)}</figcaption></figure>`;
 }
 function closeMediaLightbox() {
@@ -779,8 +805,12 @@ function renderFactionFlow() {
       const isCurrent = Number(panel.dataset.index) === index;
       panel.classList.toggle('is-current', isCurrent);
       panel.querySelectorAll('video').forEach(video => {
-        if (isCurrent) video.play().catch(() => {});
-        else video.pause();
+        if (isCurrent) {
+          ensureDeferredVideo(video);
+          video.play().catch(() => {});
+        } else {
+          releaseDeferredVideo(video);
+        }
       });
     });
   };
