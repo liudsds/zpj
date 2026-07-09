@@ -180,25 +180,6 @@ function lightboxAttrs(item) {
 function displayImageSrc(item) {
   return item?.encodedThumb || item?.thumb || item?.url || '';
 }
-function deferredVideoAttrs(item) {
-  return ` data-video-src="${escapeHTML(item.url || '')}"`;
-}
-function ensureDeferredVideo(video) {
-  if (!video) return;
-  const source = video.dataset.videoSrc;
-  if (source && video.getAttribute('src') !== source) {
-    video.src = source;
-    video.load();
-  }
-}
-function releaseDeferredVideo(video) {
-  if (!video) return;
-  video.pause();
-  if (video.dataset.videoSrc && video.getAttribute('src')) {
-    video.removeAttribute('src');
-    video.load();
-  }
-}
 function preferredCardItem(project) {
   const items = projectItems(project);
   if (!project || !items.length) return null;
@@ -227,7 +208,7 @@ function ratioGalleryModeFor(project) {
 }
 function galleryItemMarkup(item, index) {
   if (item.type === 'video') {
-    return `<video class="gallery-image gallery-video" controls muted loop playsinline preload="none"${deferredVideoAttrs(item)}${lightboxAttrs(item)}></video>`;
+    return `<video class="gallery-image gallery-video" src="${escapeHTML(item.url)}" controls muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
   }
   return `<img class="gallery-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" loading="${index < 2 ? 'eager' : 'lazy'}" decoding="async"${lightboxAttrs(item)}>`;
 }
@@ -707,12 +688,8 @@ function renderGallery() {
     panels.forEach((panel, panelIndex) => {
       const video = panel.querySelector('.gallery-video');
       if (!video) return;
-      if (panelIndex === index) {
-        ensureDeferredVideo(video);
-        video.play().catch(() => {});
-      } else {
-        releaseDeferredVideo(video);
-      }
+      if (panelIndex === index) video.play().catch(() => {});
+      else video.pause();
     });
   };
   syncGallery(0);
@@ -733,7 +710,7 @@ function factionMediaMarkup(item, title, extraClass = '') {
   if (/\.png(?:$|[?#])/i.test(item.url || '')) classes.push('is-png');
   if (item.type === 'video') classes.push('is-video');
   const media = item.type === 'video'
-    ? `<video class="faction-media faction-video" controls muted loop playsinline preload="none"${deferredVideoAttrs(item)}${lightboxAttrs(item)}></video>`
+    ? `<video class="faction-media faction-video" src="${escapeHTML(item.url)}" controls muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`
     : `<img class="faction-media faction-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" loading="lazy" decoding="async"${lightboxAttrs(item)}>`;
   return `<figure class="${classes.filter(Boolean).join(' ')}"><div class="faction-card-label">${escapeHTML(title)}</div>${media}<figcaption>${escapeHTML(item.name)}</figcaption></figure>`;
 }
@@ -805,12 +782,8 @@ function renderFactionFlow() {
       const isCurrent = Number(panel.dataset.index) === index;
       panel.classList.toggle('is-current', isCurrent);
       panel.querySelectorAll('video').forEach(video => {
-        if (isCurrent) {
-          ensureDeferredVideo(video);
-          video.play().catch(() => {});
-        } else {
-          releaseDeferredVideo(video);
-        }
+        if (isCurrent) video.play().catch(() => {});
+        else video.pause();
       });
     });
   };
