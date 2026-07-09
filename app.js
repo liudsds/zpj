@@ -12,7 +12,7 @@ const mediaLightboxStage = document.getElementById('mediaLightboxStage');
 const mediaLightboxClose = document.getElementById('mediaLightboxClose');
 
 const typeLabel = { image: '图片', video: '视频', pdf: 'PDF', deck: 'PPT', file: '文件' };
-const mediaVersion = '20260709-mobile-audio-1';
+const mediaVersion = '20260709-mobile-card-fix-1';
 const domainWords = {
   'AI创作': 'AI CREATION',
   'UI设计': 'UI DESIGN',

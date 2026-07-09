@@ -7816,7 +7816,7 @@ main,
 /* Mobile polish: keep hero card corners inside the viewport. */
 @media (hover: none), (pointer: coarse), (max-width: 820px) {
   .rpg-hero {
-    overflow: hidden !important;
+    overflow: clip !important;
   }
 
   .rpg-hero .hero-index,
@@ -7829,45 +7829,62 @@ main,
     width: calc(100vw - 32px) !important;
     margin-inline: auto !important;
     padding-inline: 16px !important;
+    contain: none !important;
   }
 
   .rpg-hero .hero-project-row,
   .rpg-hero .hero-project-row:nth-child(n) {
-    width: clamp(132px, 36vw, 156px) !important;
-    max-width: calc(50vw - 24px) !important;
+    width: clamp(124px, 34vw, 146px) !important;
+    max-width: calc(48vw - 24px) !important;
+    contain: none !important;
+    overflow: visible !important;
     transform:
       translate(-50%, -50%)
-      translateX(calc(var(--card-x) * .38))
-      translateY(calc(var(--card-y) * .5))
-      rotate(calc(var(--card-rotate) * .5)) !important;
+      translateX(calc(var(--card-x) * .22))
+      translateY(calc(var(--card-y) * .44))
+      rotate(calc(var(--card-rotate) * .38)) !important;
   }
 
   .rpg-hero .hero-project-row.is-featured {
     transform:
       translate(-50%, -50%)
-      translateX(calc(var(--card-x) * .38))
-      translateY(calc(calc(var(--card-y) * .5) - 52px))
+      translateX(calc(var(--card-x) * .22))
+      translateY(calc(calc(var(--card-y) * .44) - 46px))
       rotate(calc(var(--card-rotate) * .05))
-      scale(1.08) !important;
+      scale(1.06) !important;
   }
 
   .rpg-hero.has-active .hero-project-row:not(.is-featured) {
     transform:
       translate(-50%, -50%)
-      translateX(calc(var(--card-x) * .38))
-      translateY(calc(calc(var(--card-y) * .5) + 8px))
-      rotate(calc(var(--card-rotate) * .5))
+      translateX(calc(var(--card-x) * .22))
+      translateY(calc(calc(var(--card-y) * .44) + 8px))
+      rotate(calc(var(--card-rotate) * .38))
       scale(.92) !important;
   }
 
   .rpg-hero .hero-project-link,
-  .rpg-hero .hero-thumb {
-    overflow: visible !important;
+  .rpg-hero .hero-thumb,
+  .rpg-hero .hero-thumb-video {
     contain: none !important;
     content-visibility: visible !important;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
   }
 
   .rpg-hero .hero-project-link {
     border-radius: 24px !important;
+    overflow: hidden !important;
+    clip-path: none !important;
+    transform: translateZ(0) !important;
+  }
+
+  .rpg-hero .hero-thumb,
+  .rpg-hero .hero-thumb-video {
+    overflow: hidden !important;
+    border-radius: inherit !important;
+    inset: 0 !important;
+    transform: none !important;
+    will-change: auto !important;
   }
 }
