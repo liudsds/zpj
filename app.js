@@ -69,7 +69,8 @@ function visibleItemsForProject(project) {
   const items = projectItems(project).slice();
   if (project?.slug === 'project-0-1') return items.filter(item => item.type === 'video');
   if (project?.slug === 'project-1-0') return items.filter(item => !/首页/i.test(String(item?.name || '')));
-  if (project?.slug === 'project-2-0') return items.filter(item => !/^(1|2-02)\.png$/i.test(String(item?.name || '')));
+  if (project?.slug === 'project-1-1') return items.filter(item => !/^首页-66\.(png|jpe?g|webp|avif)$/i.test(String(item?.name || '')));
+  if (project?.slug === 'project-2-0') return items.filter(item => !/^(1|2-02)\.(png|jpe?g|webp|avif)$/i.test(String(item?.name || '')));
   if (project?.slug === 'project-3-0') return items.filter(item => !/^11\.png$/i.test(String(item?.name || '')));
   return items;
 }
@@ -182,8 +183,8 @@ function preferredCardItem(project) {
   if (project.slug === 'project-0-0') return items.find(file => file.type === 'video' && /产品创意广告/i.test(file.name)) || null;
   if (project.slug === 'project-0-2') return items.find(file => file.type === 'video' && /沧澜阁—技能展示/i.test(file.name)) || null;
   if (project.slug === 'project-1-0') return items.find(file => file.type === 'image' && /首页/i.test(file.name)) || imageAsset('首页.png', 'UI%E8%AE%BE%E8%AE%A1/LILT%20app%E8%AE%BE%E8%AE%A1/%E9%A6%96%E9%A1%B5.png');
-  if (project.slug === 'project-1-1') return items.find(file => file.type === 'video' && /渔康宝.*交互视频/i.test(file.name)) || null;
-  if (project.slug === 'project-2-0') return items.find(file => file.type === 'image' && /^2-02\.png$/i.test(file.name)) || imageAsset('2-02.png', '%E4%BA%A7%E5%93%81%E8%AE%BE%E8%AE%A1/LILT%E9%9C%B2%E8%90%A5%E6%88%B7%E5%A4%96%E5%AE%A0%E7%89%A9%E6%99%BA%E8%83%BD%E7%94%A8%E5%93%81/2-02.png');
+  if (project.slug === 'project-1-1') return items.find(file => file.type === 'image' && /^首页-66\.(png|jpe?g|webp|avif)$/i.test(file.name)) || imageAsset('首页-66.png', 'UI%E8%AE%BE%E8%AE%A1/%E6%B8%94%E5%BA%B7%E5%AE%9Dui%E8%AE%BE%E8%AE%A1/%E9%A6%96%E9%A1%B5-66.png');
+  if (project.slug === 'project-2-0') return items.find(file => file.type === 'image' && /^2-02\.(png|jpe?g|webp|avif)$/i.test(file.name)) || imageAsset('2-02.webp', '%E4%BA%A7%E5%93%81%E8%AE%BE%E8%AE%A1/LILT%E9%9C%B2%E8%90%A5%E6%88%B7%E5%A4%96%E5%AE%A0%E7%89%A9%E6%99%BA%E8%83%BD%E7%94%A8%E5%93%81/2-02.webp');
   if (project.slug === 'project-2-1') return items.find(file => file.type === 'image' && /产品ai场景渲染2/i.test(file.name)) || null;
   if (project.slug === 'project-3-0') return items.find(file => file.type === 'image' && /^11\.png$/i.test(file.name)) || null;
   return null;
@@ -200,7 +201,7 @@ function galleryModeFor(project) {
   return items.length > 1 && items.every(item => item.type === 'image');
 }
 function ratioGalleryModeFor(project) {
-  return ['project-1-0', 'project-2-2'].includes(project?.slug);
+  return ['project-1-0', 'project-2-0', 'project-2-2'].includes(project?.slug);
 }
 function galleryItemMarkup(item, index) {
   if (item.type === 'video') {
@@ -209,7 +210,7 @@ function galleryItemMarkup(item, index) {
   return `<img class="gallery-image" src="${item.url || item.encodedThumb}" alt="${escapeHTML(item.name)}" loading="${index < 2 ? 'eager' : 'lazy'}"${lightboxAttrs(item)}>`;
 }
 function factionModeFor(project) {
-  return false;
+  return project?.slug === 'project-0-2';
 }
 function factionLabelFor(item) {
   return String(item?.name || '').split('—')[0].replace(/\.(png|jpe?g|webp|mp4)$/i, '').trim();
@@ -269,20 +270,22 @@ function thumbFor(project) {
   const image = projectItems(project).find(file => file.type === 'image');
   return image ? image.encodedThumb || image.url : '';
 }
+function lightPreviewFor(project) {
+  const items = projectItems(project);
+  const preferred = preferredHeroItem(project);
+  if (preferred?.type === 'image') return preferred;
+  const cover = coverFor(project);
+  if (cover?.type === 'image') return cover;
+  return items.find(file => file.type === 'image') || null;
+}
 function heroThumbMarkup(project) {
   const thumb = thumbFor(project);
   const thumbStyle = thumb ? ` style="--thumb:url(&quot;${escapeHTML(thumb)}&quot;)"` : '';
   return `<span class="hero-thumb"${thumbStyle}></span>`;
 }
 function previewMediaFor(project) {
-  const items = projectItems(project);
-  const preferred = preferredHeroItem(project);
-  if (preferred) return { type: preferred.type, src: preferred.type === 'image' ? (preferred.encodedThumb || preferred.url) : preferred.url };
-  const video = items.find(file => file.type === 'video');
-  if (video) return { type: 'video', src: video.url };
-  const cover = coverFor(project);
-  if (cover && cover.type === 'image') return { type: 'image', src: cover.encodedThumb || cover.url };
-  if (cover && cover.type === 'video') return { type: 'video', src: cover.url };
+  const image = lightPreviewFor(project);
+  if (image) return { type: 'image', src: image.encodedThumb || image.url };
   return null;
 }
 function ambientMediaFor(project, media) {
@@ -397,6 +400,8 @@ function renderHeroIndex() {
   let lastButton = null;
   let lastRow = null;
   let clickedProjectSlug = null;
+  let heroMediaFrame = 0;
+  let heroMediaTimer = 0;
   bindCockpitMotion(hero);
   const tabs = document.createElement('div');
   tabs.className = 'hero-domain-tabs';
@@ -410,7 +415,10 @@ function renderHeroIndex() {
   hero.appendChild(caption);
 
   function clearPreview() {
+    cancelAnimationFrame(heroMediaFrame);
+    clearTimeout(heroMediaTimer);
     hero.classList.remove('has-active', 'media-video', 'media-image', 'media-png');
+    hero.classList.remove('is-interacting');
     hero.removeAttribute('data-preview-key');
     imageLayer.style.backgroundImage = '';
     imageLayer.style.opacity = '0';
@@ -466,6 +474,26 @@ function renderHeroIndex() {
       ambientImage.style.backgroundImage = `url("${ambient.src}")`;
     }
   }
+  function queueMedia(project, domain, button) {
+    cancelAnimationFrame(heroMediaFrame);
+    clearTimeout(heroMediaTimer);
+    heroMediaTimer = setTimeout(() => {
+      if (lastButton !== button) return;
+      heroMediaFrame = requestAnimationFrame(() => showMedia(project, domain, previewMediaFor(project)));
+    }, 40);
+  }
+  function warmHeroMedia(projects) {
+    if (!('requestIdleCallback' in window)) return;
+    requestIdleCallback(() => {
+      projects.forEach(({ project }) => {
+        const media = previewMediaFor(project);
+        if (!media || media.type !== 'image') return;
+        const image = new Image();
+        image.decoding = 'async';
+        image.src = media.src;
+      });
+    }, { timeout: 1200 });
+  }
   function activate(button, project, domain, options = {}) {
     if (!button) return;
     const isSame = lastButton === button;
@@ -474,10 +502,11 @@ function renderHeroIndex() {
     if (lastRow && lastRow !== row) lastRow.classList.remove('is-featured');
     lastButton = button;
     lastRow = row;
+    hero.classList.add('is-interacting');
     button.classList.add('is-active');
     if (row) row.classList.add('is-featured');
     if (isSame && options.force !== true) return;
-    showMedia(project, domain, previewMediaFor(project));
+    queueMedia(project, domain, button);
   }
   function renderDomain(domainIndex) {
     activeDomainIndex = (domainIndex + data.length) % data.length;
@@ -514,6 +543,7 @@ function renderHeroIndex() {
         openProject(entry.project.slug);
       });
     });
+    warmHeroMedia(heroEntries);
     clearPreview();
   }
 
@@ -550,10 +580,11 @@ function coverMarkup(project) {
   const poster = thumbFor(project);
   if (!cover) return '<div class="doc-cover">EMPTY</div>';
   if (cover.type === 'video') {
-    const shouldAutoplay = project?.slug === 'project-1-1';
-    const autoplayAttrs = shouldAutoplay ? 'autoplay data-cover-autoplay="true" preload="metadata"' : 'preload="none"';
-    const posterAttr = shouldAutoplay ? '' : (poster ? `poster="${poster}" ` : '');
-    return `<video src="${cover.url}" ${posterAttr}muted loop playsinline ${autoplayAttrs}></video>`;
+    const still = lightPreviewFor(project);
+    if (still) return `<img class="project-cover-poster" src="${still.encodedThumb || still.url}" alt="${escapeHTML(project.name)}" loading="lazy" decoding="async" data-video-cover="true">`;
+    return poster
+      ? `<img class="project-cover-poster" src="${poster}" alt="${escapeHTML(project.name)}" loading="lazy" decoding="async" data-video-cover="true">`
+      : '<div class="doc-cover">VIDEO</div>';
   }
   if (cover.type === 'image') return `<img src="${cover.encodedThumb || cover.url}" alt="${escapeHTML(project.name)}" loading="lazy" decoding="async">`;
   return `<div class="doc-cover">${typeLabel[cover.type] || 'FILE'}</div>`;
@@ -715,8 +746,8 @@ function renderFactionFlow() {
     <div class="faction-flow">
       ${activeSections.map((section, index) => {
         const cards = [
-          { item: section.character, title: '角色设定' },
           { item: section.video, title: '技能展示' },
+          { item: section.character, title: '角色设定' },
           { item: section.scene, title: '场景设定' },
           { item: section.turnaround, title: '角色三视图' },
           ...section.extras.map(item => ({ item, title: section.name }))
