@@ -180,38 +180,6 @@ function lightboxAttrs(item) {
 function displayImageSrc(item) {
   return item?.encodedThumb || item?.thumb || item?.url || '';
 }
-function videoPosterSrc(item) {
-  if (!item || item.type !== 'video' || !activeProject) return '';
-  const allItems = projectItems(activeProject);
-  const imageItems = allItems.filter(entry => entry.type === 'image');
-  if (!imageItems.length) return '';
-
-  if (activeProject.slug === 'project-0-2') {
-    const label = factionLabelFor(item);
-    const sameFaction = imageItems.filter(entry => factionLabelFor(entry) === label);
-    const preferred = sameFaction.find(entry => /场景设定|角场景设定/i.test(entry.name))
-      || sameFaction.find(entry => /角色设定/i.test(entry.name))
-      || sameFaction[0];
-    if (preferred) return displayImageSrc(preferred);
-  }
-
-  if (activeProject.slug === 'project-0-3') {
-    const preferred = imageItems.find(entry => /角色设定/i.test(entry.name))
-      || imageItems.find(entry => /场景/i.test(entry.name));
-    if (preferred) return displayImageSrc(preferred);
-  }
-
-  if (activeProject.slug === 'project-1-1') {
-    const preferred = allItems.find(entry => entry.type === 'image' && /^首页-66\.(png|jpe?g|webp|avif)$/i.test(entry.name));
-    if (preferred) return displayImageSrc(preferred);
-  }
-
-  return displayImageSrc(imageItems[0]);
-}
-function videoPosterAttr(item) {
-  const poster = videoPosterSrc(item);
-  return poster ? ` poster="${escapeHTML(poster)}"` : '';
-}
 function preferredCardItem(project) {
   const items = projectItems(project);
   if (!project || !items.length) return null;
@@ -240,7 +208,7 @@ function ratioGalleryModeFor(project) {
 }
 function galleryItemMarkup(item, index) {
   if (item.type === 'video') {
-    return `<video class="gallery-image gallery-video" src="${escapeHTML(item.url)}" controls muted loop playsinline preload="metadata"${videoPosterAttr(item)}${lightboxAttrs(item)}></video>`;
+    return `<video class="gallery-image gallery-video" src="${escapeHTML(item.url)}" controls autoplay muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
   }
   return `<img class="gallery-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" loading="eager" decoding="async"${lightboxAttrs(item)}>`;
 }
@@ -646,7 +614,7 @@ function itemMarkup(item) {
   if (item.type === 'process-board') {
     return `<div class="slide-media process-board">${item.processItems.map((entry, index) => `<figure class="process-board-item"><button class="process-board-hit" type="button" aria-label="放大查看 ${escapeHTML(entry.name)}" data-lightbox-src="${escapeHTML(entry.url)}" data-lightbox-type="image" data-lightbox-name="${escapeHTML(entry.name)}"><img class="process-board-image" src="${displayImageSrc(entry)}" alt="${escapeHTML(entry.name)}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async"></button><figcaption>${escapeHTML(entry.name.replace(/\.[^.]+$/, ''))}</figcaption></figure>`).join('')}</div>`;
   }
-  if (item.type === 'video') return `<video class="slide-media slide-video" src="${escapeHTML(item.url)}" controls muted autoplay playsinline preload="metadata"${videoPosterAttr(item)}${lightboxAttrs(item)}></video>`;
+  if (item.type === 'video') return `<video class="slide-media slide-video" src="${escapeHTML(item.url)}" controls muted autoplay playsinline preload="metadata"${lightboxAttrs(item)}></video>`;
   if (item.type === 'image') return `<img class="slide-media slide-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" loading="eager" decoding="async"${lightboxAttrs(item)}>`;
   return `<div class="slide-file"><strong>${typeLabel[item.type] || '文件'}</strong><a href="${item.url}" target="_blank" rel="noreferrer">打开原文件</a></div>`;
 }
@@ -742,7 +710,7 @@ function factionMediaMarkup(item, title, extraClass = '') {
   if (/\.png(?:$|[?#])/i.test(item.url || '')) classes.push('is-png');
   if (item.type === 'video') classes.push('is-video');
   const media = item.type === 'video'
-    ? `<video class="faction-media faction-video" src="${escapeHTML(item.url)}" controls muted loop playsinline preload="metadata"${videoPosterAttr(item)}${lightboxAttrs(item)}></video>`
+    ? `<video class="faction-media faction-video" src="${escapeHTML(item.url)}" controls autoplay muted loop playsinline preload="metadata"${lightboxAttrs(item)}></video>`
     : `<img class="faction-media faction-image" src="${displayImageSrc(item)}" alt="${escapeHTML(item.name)}" loading="eager" decoding="async"${lightboxAttrs(item)}>`;
   return `<figure class="${classes.filter(Boolean).join(' ')}"><div class="faction-card-label">${escapeHTML(title)}</div>${media}<figcaption>${escapeHTML(item.name)}</figcaption></figure>`;
 }
@@ -928,6 +896,7 @@ function bindCards() {
 closeButton.addEventListener('click', () => dialog.close());
 dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
 dialogMedia.addEventListener('click', event => {
+  if (event.target.closest('video')) return;
   const media = event.target.closest('[data-lightbox-src]')
     || event.target.closest('.gallery-panel')?.querySelector('[data-lightbox-src]')
     || event.target.closest('.faction-card')?.querySelector('[data-lightbox-src]');
