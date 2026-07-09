@@ -1,5 +1,7 @@
 netlify-drop-build/
 netlify-drop.zip
+.codex_ffmpeg/
+tools_ffmpeg/
 
 *.log
 *.tmp
